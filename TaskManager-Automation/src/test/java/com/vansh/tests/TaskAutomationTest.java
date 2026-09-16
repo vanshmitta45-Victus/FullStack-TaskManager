@@ -13,18 +13,22 @@ public class TaskAutomationTest {
     WebDriver driver;
     TaskManagerPage taskPage;
 
-    @BeforeMethod
+       @BeforeMethod
     public void setup() {
-        // 1. Setup Chrome
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.manage().window().maximize();
+        
+        // --- ADD THESE LINES FOR CI/CD SUPPORT ---
+        org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
+        options.addArguments("--headless"); // Runs Chrome without a UI (Essential for GitHub Actions)
+        options.addArguments("--no-sandbox"); // Bypass OS security model
+        options.addArguments("--disable-dev-shm-usage"); // Overcome limited resource problems in Docker
+        options.addArguments("--window-size=1920,1080"); // Set a standard screen size
+        // ------------------------------------------
 
-        // 2. Open the React App
+        driver = new ChromeDriver(options); // Pass the options to the driver
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.get("http://localhost:5173");
 
-        // 3. Connect the test to the Page Object
         taskPage = new TaskManagerPage(driver);
     }
 
